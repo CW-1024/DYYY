@@ -110,7 +110,7 @@ typedef NS_ENUM(NSInteger, DYYYSettingItemType) {
 }
 
 - (void)setupSectionTitles {
-    self.sectionTitles = [@[@"弹幕设置", @"界面设置", @"隐藏设置", @"顶栏移除"] mutableCopy];
+    self.sectionTitles = [@[@"基本设置", @"界面设置", @"隐藏设置", @"顶栏移除"] mutableCopy];
 }
 
 - (void)setupFooterLabel {
@@ -162,7 +162,7 @@ typedef NS_ENUM(NSInteger, DYYYSettingItemType) {
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     switch (section) {
         case 0:
-            return @"弹幕设置";
+            return @"基本设置";
         case 1:
             return @"界面设置";
         case 2:
