@@ -10,6 +10,15 @@
 #import "CityManager.h"
 #import "AwemeHeaders.h"
 
+%hook AWEConcernSkylightCapsuleView
+
+- (void)setHidden:(BOOL)hidden {
+    hidden = YES;  // Force hidden to YES
+    %orig(hidden);
+}
+
+%end
+
 %hook AWEAwemePlayVideoViewController
 
 - (void)setIsAutoPlay:(BOOL)arg0 {
