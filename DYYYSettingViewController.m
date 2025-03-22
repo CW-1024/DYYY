@@ -118,11 +118,10 @@ typedef NS_ENUM(NSInteger, DYYYSettingItemType) {
         @[
             [DYYYSettingItem itemWithTitle:@"启用弹幕改色" key:@"DYYYEnableDanmuColor" type:DYYYSettingItemTypeSwitch],
             [DYYYSettingItem itemWithTitle:@"自定弹幕颜色" key:@"DYYYdanmuColor" type:DYYYSettingItemTypeTextField placeholder:@"十六进制"],
-            [DYYYSettingItem itemWithTitle:@"启用深色键盘" key:@"DYYYisDarkKeyBoard" type:DYYYSettingItemTypeSwitch],
+            [DYYYSettingItem itemWithTitle:@"清理缓存加强" key:@"DYYYCleanCache" type:DYYYSettingItemTypeSwitch],
             [DYYYSettingItem itemWithTitle:@"显示视频进度" key:@"DYYYisShowScheduleDisplay" type:DYYYSettingItemTypeSwitch],
             [DYYYSettingItem itemWithTitle:@"启用自动播放" key:@"DYYYisEnableAutoPlay" type:DYYYSettingItemTypeSwitch],
             [DYYYSettingItem itemWithTitle:@"启用过滤直播" key:@"DYYYisSkipLive" type:DYYYSettingItemTypeSwitch],
-            [DYYYSettingItem itemWithTitle:@"启用首页净化" key:@"DYYYisEnablePure" type:DYYYSettingItemTypeSwitch],
             [DYYYSettingItem itemWithTitle:@"启用首页全屏" key:@"DYYYisEnableFullScreen" type:DYYYSettingItemTypeSwitch],
             [DYYYSettingItem itemWithTitle:@"启用屏蔽广告" key:@"DYYYNoAds" type:DYYYSettingItemTypeSwitch],
             [DYYYSettingItem itemWithTitle:@"评论区毛玻璃" key:@"DYYYisEnableCommentBlur" type:DYYYSettingItemTypeSwitch],
@@ -131,12 +130,10 @@ typedef NS_ENUM(NSInteger, DYYYSettingItemType) {
             [DYYYSettingItem itemWithTitle:@"隐藏系统顶栏" key:@"DYYYisHideStatusbar" type:DYYYSettingItemTypeSwitch],
             [DYYYSettingItem itemWithTitle:@"关注二次确认" key:@"DYYYfollowTips" type:DYYYSettingItemTypeSwitch],
             [DYYYSettingItem itemWithTitle:@"收藏二次确认" key:@"DYYYcollectTips" type:DYYYSettingItemTypeSwitch]
-
         ],
         @[
-            [DYYYSettingItem itemWithTitle:@"设置顶栏透明" key:@"DYYYtopbartransparent" type:DYYYSettingItemTypeTextField placeholder:@"0-1小数"],
+            [DYYYSettingItem itemWithTitle:@"设置顶栏透明" key:@"DYYYtopbartransparent" type:DYYYSettingItemTypeTextField placeholder:@"0-1的小数"],
             [DYYYSettingItem itemWithTitle:@"设置全局透明" key:@"DYYYGlobalTransparency" type:DYYYSettingItemTypeTextField placeholder:@"0-1的小数"],
-            [DYYYSettingItem itemWithTitle:@"设置默认倍速" key:@"DYYYDefaultSpeed" type:DYYYSettingItemTypeSpeedPicker],
             [DYYYSettingItem itemWithTitle:@"右侧栏缩放度" key:@"DYYYElementScale" type:DYYYSettingItemTypeTextField placeholder:@"不填默认"],
             [DYYYSettingItem itemWithTitle:@"设置首页标题" key:@"DYYYIndexTitle" type:DYYYSettingItemTypeTextField placeholder:@"不填默认"],
             [DYYYSettingItem itemWithTitle:@"设置朋友标题" key:@"DYYYFriendsTitle" type:DYYYSettingItemTypeTextField placeholder:@"不填默认"],
@@ -167,6 +164,13 @@ typedef NS_ENUM(NSInteger, DYYYSettingItemType) {
             [DYYYSettingItem itemWithTitle:@"隐藏热点提示" key:@"DYYYHideHotspot" type:DYYYSettingItemTypeSwitch],
             [DYYYSettingItem itemWithTitle:@"隐藏关注直播" key:@"DYYYHidenCapsuleView" type:DYYYSettingItemTypeSwitch],
             [DYYYSettingItem itemWithTitle:@"隐藏顶栏横线" key:@"DYYYHidentopbarprompt" type:DYYYSettingItemTypeSwitch],
+            [DYYYSettingItem itemWithTitle:@"隐藏顶栏短剧" key:@"DYYYHidedj" type:DYYYSettingItemTypeSwitch],
+            [DYYYSettingItem itemWithTitle:@"隐藏头像气泡" key:@"DYYYHidenqipo" type:DYYYSettingItemTypeSwitch],
+            [DYYYSettingItem itemWithTitle:@"隐藏头像关注" key:@"DYYYHideFollowSymbol" type:DYYYSettingItemTypeSwitch],
+            [DYYYSettingItem itemWithTitle:@"隐藏弹幕按钮" key:@"DYYYHideDanmuButton" type:DYYYSettingItemTypeSwitch],
+            [DYYYSettingItem itemWithTitle:@"隐藏商店物品" key:@"DYYYHideStoreItems" type:DYYYSettingItemTypeSwitch],
+            [DYYYSettingItem itemWithTitle:@"隐藏商店预约" key:@"DYYYHideStoreReservation" type:DYYYSettingItemTypeSwitch],
+            [DYYYSettingItem itemWithTitle:@"隐藏点击推荐" key:@"DYYYHideRecommend" type:DYYYSettingItemTypeSwitch],
         ],
         @[
             [DYYYSettingItem itemWithTitle:@"移除推荐" key:@"DYYYHideHotContainer" type:DYYYSettingItemTypeSwitch],
@@ -185,7 +189,7 @@ typedef NS_ENUM(NSInteger, DYYYSettingItemType) {
             [DYYYSettingItem itemWithTitle:@"长按面板保存媒体" key:@"DYYYLongPressDownload" type:DYYYSettingItemTypeSwitch],
             [DYYYSettingItem itemWithTitle:@"移除评论实况水印" key:@"DYYYCommentLivePhotoNotWaterMark" type:DYYYSettingItemTypeSwitch],
             [DYYYSettingItem itemWithTitle:@"移除评论图片水印" key:@"DYYYCommentNotWaterMark" type:DYYYSettingItemTypeSwitch],
-            [DYYYSettingItem itemWithTitle:@"启用双击打开评论" key:@"DYYYEnableDoubleOpenComment" type:DYYYSettingItemTypeSwitch],
+            [DYYYSettingItem itemWithTitle:@"启用双击评论点赞" key:@"DYYYEnableDoubleOpenComment" type:DYYYSettingItemTypeSwitch],
             [DYYYSettingItem itemWithTitle:@"保存评论区表情包" key:@"DYYYFourceDownloadEmotion" type:DYYYSettingItemTypeSwitch],
             [DYYYSettingItem itemWithTitle:@"长按评论复制文案" key:@"DYYYCommentCopyText" type:DYYYSettingItemTypeSwitch]
         ]
