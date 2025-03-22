@@ -11,6 +11,145 @@
 #import "AwemeHeaders.h"
 #import "DYYYManager.h"
 
+// 隐藏消息页顶栏头像气泡
+%hook AFDSkylightCellBubble
+- (void)layoutSubviews {
+    %orig;
+
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"DYYYHidenqipo"]) {
+        [self removeFromSuperview];
+        return;
+    }
+}
+
+%end
+
+//去除开屏广告
+%hook BDASplashControllerView
+
++ (id)alloc {
+    return nil; // 直接返回空指针，阻止内存分配
+}
+
+
+%end
+
+//隐藏头像+号
+%hook LOTAnimationView
+
+- (void)layoutSubviews {
+    %orig;
+ 
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"DYYYHideFollowSymbol"]) {
+        self.hidden = YES;
+    }
+}
+
+%end
+
+//隐藏弹幕按钮
+%hook AWEPlayDanmakuInputContainView
+
+- (void)layoutSubviews {
+    %orig;
+
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"DYYYHideDanmuButton"]) {
+        self.hidden = YES;
+    }
+}
+
+%end
+
+//隐藏点击推荐
+%hook AFDRecommendToFriendEntranceLabel
+
+- (void)layoutSubviews {
+    %orig;
+
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"DYYYHideRecommend"]) {
+        self.hidden = YES;
+    }
+}
+
+%end
+
+//隐藏右下音乐和取消静音
+%hook AFDCancelMuteAwemeView
+- (void)layoutSubviews {
+    %orig;
+
+    UIView *superview = self.superview;
+
+    if ([superview isKindOfClass:NSClassFromString(@"AWEBaseElementView")]) {
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"DYYYHideMusicButton"]) {
+            self.hidden = YES;
+            superview.hidden = YES;
+        }
+    }
+}
+%end
+
+//隐藏商店物品
+%hook AWEECommerceEntryView
+- (void)layoutSubviews {
+    %orig;
+
+    UIView *superview = self.superview;
+
+    if ([superview isKindOfClass:NSClassFromString(@"AWEBaseElementView")]) {
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"DYYYHideStoreItems"]) {
+            self.hidden = YES;
+            superview.hidden = YES;
+        }
+    }
+}
+%end
+
+//隐藏商店预约
+%hook AWEFeedAnchorContainerView
+- (void)layoutSubviews {
+    %orig;
+
+    UIView *superview = self.superview;
+
+    if ([superview isKindOfClass:NSClassFromString(@"AWEBaseElementView")]) {
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"DYYYHideStoreReservation"]) {
+            self.hidden = YES;
+            superview.hidden = YES;
+        }
+    }
+}
+%end
+
+// 清理缓存功能
+// 先放着～  @"userSession.data", @"config.plist"  还需要更新～
+
+%hook AppDelegate
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    BOOL result = %orig;
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"DYYYCleanCache"]) {
+        [self performSelectorInBackground:@selector(clearCache) withObject:nil];
+    }
+    return result;
+}
+
+%new
+- (void)clearCache {
+    NSString *cachePath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSArray *files = [fileManager subpathsOfDirectoryAtPath:cachePath error:nil];
+    NSArray *protectedFiles = @[@"userSession.data", @"config.plist"];
+
+    for (NSString *file in files) {
+        if ([protectedFiles containsObject:file]) continue;
+        NSString *filePath = [cachePath stringByAppendingPathComponent:file];
+        [fileManager removeItemAtPath:filePath error:nil];
+    }
+}
+
+%end
+
 %hook AWEAwemePlayVideoViewController
 
 - (void)setIsAutoPlay:(BOOL)arg0 {
@@ -351,7 +490,9 @@
 
 %end
 
+//双击点赞评论弹窗
 %hook AWEPlayInteractionViewController
+
 - (void)viewDidLayoutSubviews {
     %orig;
     if (![self.parentViewController isKindOfClass:%c(AWEFeedCellViewController)]) {
@@ -363,16 +504,58 @@
         self.view.frame = frame;
     }
 }
-//MARK: 双击视频打开评论区视频的双击事件
-- (void)onPlayer:(id)arg0 didDoubleClick:(id)arg1{
-    //如果打开双击评论功能
-    if([[NSUserDefaults standardUserDefaults] boolForKey:@"DYYYEnableDoubleOpenComment"]){
-        //调用原生的
-         [self performCommentAction];
+
+// 双击视频触发弹窗
+- (void)onPlayer:(id)arg0 didDoubleClick:(id)arg1 {
+    // 检查开关状态
+    BOOL isPopupEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"DYYYEnableDoubleOpenComment"];
+    
+    if (!isPopupEnabled) {
+        // 如果开关关闭，执行原始的双击逻辑
+        %orig;
         return;
     }
-    %orig;
+    
+    // 如果开关打开，显示弹窗
+    UIAlertController *alertController = [UIAlertController
+        alertControllerWithTitle:@"选择操作"
+        message:@""
+        preferredStyle:UIAlertControllerStyleActionSheet]; // 使用 ActionSheet 样式
+
+    // 添加“打开评论区”选项
+    [alertController addAction:[UIAlertAction
+        actionWithTitle:@"打开评论区"
+        style:UIAlertActionStyleDefault
+        handler:^(UIAlertAction *action) {
+            // 调用打开评论区的逻辑
+            [self performCommentAction];
+        }]];
+
+    // 添加“点赞视频”选项
+    [alertController addAction:[UIAlertAction
+        actionWithTitle:@"点赞视频"
+        style:UIAlertActionStyleDefault
+        handler:^(UIAlertAction *action) {
+            // 调用原始的点赞逻辑
+            %orig;
+        }]];
+
+    // 添加“取消”选项
+    [alertController addAction:[UIAlertAction
+        actionWithTitle:@"取消"
+        style:UIAlertActionStyleCancel
+        handler:nil]];
+
+    // 显示弹窗
+    UIViewController *topController = [DYYYManager getActiveTopController];
+    if (topController) {
+        [topController presentViewController:alertController animated:YES completion:nil];
+    }
+
+    // 阻止原始的双击逻辑
+    return;
 }
+
 %end
 
 
