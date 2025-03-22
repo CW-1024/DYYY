@@ -11,6 +11,19 @@
 #import "AwemeHeaders.h"
 #import "DYYYManager.h"
 
+//隐藏作者声明
+%hook AWEAntiAddictedNoticeBarView
+
+- (void)layoutSubviews {
+    %orig;
+
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"HideAntiAddictedNoticeBar"]) {
+        self.hidden = YES;
+    }
+}
+
+%end
+
 // 隐藏消息页顶栏头像气泡
 %hook AFDSkylightCellBubble
 - (void)layoutSubviews {
