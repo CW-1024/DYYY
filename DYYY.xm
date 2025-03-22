@@ -867,9 +867,25 @@
 }
 %end
 
+//评论区搜索等功能
 %hook UIView
 - (void)layoutSubviews {
-    %orig;
+    %orig; // 调用原始的 layoutSubviews 方法
+
+    // 检查并处理 accessibilityLabel 为“搜索”的视图
+    NSString *accessibilityLabel = self.accessibilityLabel;
+    if ([accessibilityLabel isEqualToString:@"搜索"]) {
+        // 检查用户是否设置了隐藏搜索按钮的偏好
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"DYYYHideSearchButton"]) {
+            // 隐藏视图
+            self.hidden = YES;
+        } else {
+            // 如果不需要隐藏，确保视图可见
+            self.hidden = NO;
+        }
+    }
+
+    // 原有的逻辑
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"DYYYisDarkKeyBoard"]) {
         for (UIView *subview in self.subviews) {
             if ([subview isKindOfClass:NSClassFromString(@"AWECommentInputViewSwiftImpl.CommentInputViewMiddleContainer")]) {
@@ -885,8 +901,9 @@
             }
         }
     }
+
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"DYYYisEnableFullScreen"] || 
-    [[NSUserDefaults standardUserDefaults] boolForKey:@"DYYYisEnableCommentBlur"]) {
+        [[NSUserDefaults standardUserDefaults] boolForKey:@"DYYYisEnableCommentBlur"]) {
         NSString *className = NSStringFromClass([self class]);
         if ([className isEqualToString:@"AWECommentInputViewSwiftImpl.CommentInputContainerView"]) {
             for (UIView *subview in self.subviews) {
