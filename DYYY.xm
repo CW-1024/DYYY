@@ -47,7 +47,7 @@
 
 %end
 
-//隐藏头像+号
+//隐藏头像加号
 %hook LOTAnimationView
 
 - (void)layoutSubviews {
