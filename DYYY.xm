@@ -1308,6 +1308,8 @@
             isHideChannel = [defaults boolForKey:@"DYYYHideHangout"];
         } else if ([channelID isEqualToString:@"homepage_familiar"]) {
             isHideChannel = [defaults boolForKey:@"DYYYHideFriend"];
+        } else if ([channelID isEqualToString:@"homepage_playlet_stream"]) {
+            isHideChannel = [defaults boolForKey:@"DYYYHidedj"];
         }
         
         if (!isHideChannel) {
