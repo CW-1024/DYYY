@@ -1,8 +1,7 @@
 Package: com.cw.dyyy
 Name: DYYY
 Version: 9.9-9
-Description: 仅供学习交流。
-Homepage: https://github.com/CW-1024/DYYY
+Description: 仅供学习交流，请在 24 小时内自觉删除。
 Section: Tweaks
 Depends: firmware (>= 5.0), mobilesubstrate
 Priority: optional

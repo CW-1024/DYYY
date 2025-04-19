@@ -96,8 +96,8 @@ static void initTargetClassNames(void) {
 		self.hiddenViewsList = [NSMutableArray array];
         
         // 设置默认状态为半透明
-        self.originalAlpha = 0.6;  // 交互时为完全1.0不透明
-        self.alpha = 0.6;  // 初始为半透明
+        self.originalAlpha = 0.8;  // 交互时为完全1.0不透明
+        self.alpha = 0.8;  // 初始为半透明
 		// 加载保存的锁定状态
 		[self loadLockState];
 		[self loadIcons];
@@ -137,7 +137,7 @@ static void initTargetClassNames(void) {
 							   block:^(NSTimer *timer) {
 							     [UIView animateWithDuration:0.3
 									      animations:^{
-										self.alpha = 0.6;  // 变为半透明
+										self.alpha = 0.8;  // 变为半透明
 									      }];
 							   }];
 	// 交互时变为完全不透明
@@ -448,7 +448,7 @@ static void initTargetClassNames(void) {
     // 提前准备按钮显示
     if (hideButton) {
         hideButton.hidden = NO;
-        hideButton.alpha = 0.6;
+        hideButton.alpha = 0.8;
     }
 }
 - (void)viewWillAppear:(BOOL)animated {
@@ -457,7 +457,7 @@ static void initTargetClassNames(void) {
     // 立即显示按钮
     if (hideButton) {
         hideButton.hidden = NO;
-        hideButton.alpha = 0.6;
+        hideButton.alpha = 0.8;
     }
 }
 - (void)viewDidAppear:(BOOL)animated {
@@ -511,7 +511,7 @@ static void initTargetClassNames(void) {
         
         CGFloat buttonSize = [[NSUserDefaults standardUserDefaults] floatForKey:@"DYYYEnableFloatClearButtonSize"] ?: 40.0;
         hideButton = [[HideUIButton alloc] initWithFrame:CGRectMake(0, 0, buttonSize, buttonSize)];
-        hideButton.alpha = 0.6;
+        hideButton.alpha = 1.0;
         
         NSString *savedPositionString = [[NSUserDefaults standardUserDefaults] objectForKey:@"DYYYHideUIButtonPosition"];
         if (savedPositionString) {
