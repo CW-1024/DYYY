@@ -471,7 +471,43 @@ static void showUserAgreementAlert() {
 		    for (NSDictionary *dict in videoSettings) {
 			    AWESettingItemModel *item = [self createSettingItem:dict cellTapHandlers:cellTapHandlers];
 
-			    if ([item.identifier isEqualToString:@"DYYYScheduleStyle"]) {
+			    if ([item.identifier isEqualToString:@"DYYYDefaultSpeed"]) {
+				    // 获取已保存的默认倍速值
+				    NSString *savedSpeed = [[NSUserDefaults standardUserDefaults] objectForKey:@"DYYYDefaultSpeed"];
+				    item.detail = savedSpeed ?: @"1.0x";
+
+				    item.cellTappedBlock = ^{
+				      NSArray *speedOptions = @[ @"0.75x", @"1.0x", @"1.25x", @"1.5x", @"2.0x", @"2.5x", @"3.0x" ];
+
+				      // 显示选项选择视图并直接获取返回值
+				      NSString *selectedValue = [DYYYOptionsSelectionView showWithPreferenceKey:@"DYYYDefaultSpeed"
+												   optionsArray:speedOptions
+												     headerText:@"选择默认倍速"
+												 onPresentingVC:topView()];
+
+				      // 设置详情文本为选中的值
+				      item.detail = selectedValue;
+				      UIViewController *topVC = topView();
+				      // 刷新表格视图
+				      if ([topVC isKindOfClass:%c(AWESettingBaseViewController)]) {
+					      dispatch_async(dispatch_get_main_queue(), ^{
+						UITableView *tableView = nil;
+						for (UIView *subview in topVC.view.subviews) {
+							if ([subview isKindOfClass:[UITableView class]]) {
+								tableView = (UITableView *)subview;
+								break;
+							}
+						}
+
+						if (tableView) {
+							[tableView reloadData];
+						}
+					      });
+				      }
+				    };
+			    }
+
+			    else if ([item.identifier isEqualToString:@"DYYYScheduleStyle"]) {
 				    NSString *savedStyle = [[NSUserDefaults standardUserDefaults] objectForKey:@"DYYYScheduleStyle"];
 				    item.detail = savedStyle ?: @"默认";
 				    item.cellTappedBlock = ^{
@@ -794,6 +830,11 @@ static void showUserAgreementAlert() {
 			      @"detail" : @"0-1小数",
 			      @"cellType" : @26,
 			      @"imageName" : @"ic_module_outlined_20"},
+			    @{@"identifier" : @"DYYYGlobalTransparency",
+			      @"title" : @"设置全局透明",
+			      @"detail" : @"0-1小数",
+			      @"cellType" : @26,
+			      @"imageName" : @"ic_eye_outlined_20"},
 			    @{@"identifier" : @"DYYYAvatarViewTransparency",
 			      @"title" : @"首页头像透明",
 			      @"detail" : @"0-1小数",
