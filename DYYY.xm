@@ -65,6 +65,22 @@ static void DYYYAddCustomViewToParent(UIView *parentView, float transparency) {
 	}
 }
 
+%group needDelays
+
+%hook AWEAwemePlayVideoViewController
+
+- (void)setIsAutoPlay:(BOOL)arg0 {
+	float defaultSpeed = [[NSUserDefaults standardUserDefaults] floatForKey:@"DYYYDefaultSpeed"];
+
+	if (defaultSpeed > 0 && defaultSpeed != 1) {
+		[self setVideoControllerPlaybackRate:defaultSpeed];
+	}
+
+	%orig(arg0);
+}
+
+%end
+
 %hook AWEPlayInteractionUserAvatarElement
 - (void)onFollowViewClicked:(UITapGestureRecognizer *)gesture {
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"DYYYfollowTips"]) {
@@ -84,6 +100,8 @@ static void DYYYAddCustomViewToParent(UIView *parentView, float transparency) {
 
 %end
 
+%end
+
 %hook AWENormalModeTabBarGeneralPlusButton
 + (id)button {
 	BOOL isHiddenJia = [[NSUserDefaults standardUserDefaults] boolForKey:@"DYYYisHiddenJia"];
@@ -91,6 +109,86 @@ static void DYYYAddCustomViewToParent(UIView *parentView, float transparency) {
 		return nil;
 	}
 	return %orig;
+}
+%end
+
+%hook AWEFeedContainerContentView
+- (void)setAlpha:(CGFloat)alpha {
+	// 纯净模式功能
+	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"DYYYisEnablePure"]) {
+		%orig(0.0);
+
+		static dispatch_source_t timer = nil;
+		static int attempts = 0;
+
+		if (timer) {
+			dispatch_source_cancel(timer);
+			timer = nil;
+		}
+
+		void (^tryFindAndSetPureMode)(void) = ^{
+		  UIWindow *keyWindow = [DYYYManager getActiveWindow];
+
+		  if (keyWindow && keyWindow.rootViewController) {
+			  UIViewController *feedVC = [self findViewController:keyWindow.rootViewController ofClass:NSClassFromString(@"AWEFeedTableViewController")];
+			  if (feedVC) {
+				  [feedVC setValue:@YES forKey:@"pureMode"];
+				  if (timer) {
+					  dispatch_source_cancel(timer);
+					  timer = nil;
+				  }
+				  attempts = 0;
+				  return;
+			  }
+		  }
+
+		  attempts++;
+		  if (attempts >= 10) {
+			  if (timer) {
+				  dispatch_source_cancel(timer);
+				  timer = nil;
+			  }
+			  attempts = 0;
+		  }
+		};
+
+		timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
+		dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC, 0);
+		dispatch_source_set_event_handler(timer, tryFindAndSetPureMode);
+		dispatch_resume(timer);
+
+		tryFindAndSetPureMode();
+		return;
+	}
+
+	// 原来的透明度设置逻辑，保持不变
+	NSString *transparentValue = [[NSUserDefaults standardUserDefaults] objectForKey:@"DYYYtopbartransparent"];
+	if (transparentValue && transparentValue.length > 0) {
+		CGFloat alphaValue = [transparentValue floatValue];
+		if (alphaValue >= 0.0 && alphaValue <= 1.0) {
+			%orig(alphaValue);
+		} else {
+			%orig(1.0);
+		}
+	} else {
+		%orig(1.0);
+	}
+}
+
+%new
+- (UIViewController *)findViewController:(UIViewController *)vc ofClass:(Class)targetClass {
+	if (!vc)
+		return nil;
+	if ([vc isKindOfClass:targetClass])
+		return vc;
+
+	for (UIViewController *childVC in vc.childViewControllers) {
+		UIViewController *found = [self findViewController:childVC ofClass:targetClass];
+		if (found)
+			return found;
+	}
+
+	return [self findViewController:vc.presentedViewController ofClass:targetClass];
 }
 %end
 
@@ -106,6 +204,11 @@ static void DYYYAddCustomViewToParent(UIView *parentView, float transparency) {
 }
 %new
 - (void)applyDYYYTransparency {
+	// 如果启用了纯净模式，不做任何处理
+	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"DYYYisEnablePure"]) {
+		return;
+	}
+
 	NSString *transparentValue = [[NSUserDefaults standardUserDefaults] objectForKey:@"DYYYtopbartransparent"];
 	if (transparentValue && transparentValue.length > 0) {
 		CGFloat alphaValue = [transparentValue floatValue];
@@ -674,6 +777,38 @@ static void DYYYAddCustomViewToParent(UIView *parentView, float transparency) {
 		}
 	}
 }
+%end
+
+%hook UIView
+
+- (void)setAlpha:(CGFloat)alpha {
+	UIViewController *vc = [self firstAvailableUIViewController];
+
+	if ([vc isKindOfClass:%c(AWEPlayInteractionViewController)] && alpha > 0) {
+		NSString *transparentValue = [[NSUserDefaults standardUserDefaults] stringForKey:@"DYYYGlobalTransparency"];
+		if (transparentValue.length > 0) {
+			CGFloat alphaValue = transparentValue.floatValue;
+			if (alphaValue >= 0.0 && alphaValue <= 1.0) {
+				%orig(alphaValue);
+				return;
+			}
+		}
+	}
+	%orig;
+}
+
+%new
+- (UIViewController *)firstAvailableUIViewController {
+	UIResponder *responder = [self nextResponder];
+	while (responder != nil) {
+		if ([responder isKindOfClass:[UIViewController class]]) {
+			return (UIViewController *)responder;
+		}
+		responder = [responder nextResponder];
+	}
+	return nil;
+}
+
 %end
 
 %hook AWEAwemeModel
@@ -3127,5 +3262,8 @@ static BOOL isDownloadFlied = NO;
 %ctor {
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"DYYYUserAgreementAccepted"]) {
 		%init;
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+			%init(needDelays);
+		});
 	}
 }
