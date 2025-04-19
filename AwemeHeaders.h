@@ -1,6 +1,7 @@
 #import <UIKit/UIKit.h>
 #import <Photos/Photos.h>
 
+#define DYYYGetBool(key) [[NSUserDefaults standardUserDefaults] boolForKey:key]
 #define DYYY 100
 
 typedef NS_ENUM(NSInteger, MediaType) {
@@ -119,6 +120,8 @@ typedef NS_ENUM(NSInteger, MediaType) {
 @interface AWELongPressPanelManager : NSObject
 + (instancetype)shareInstance;
 - (void)dismissWithAnimation:(BOOL)animated completion:(void (^)(void))completion;
+- (BOOL)shouldShowMordenLongPressPanel;
+- (BOOL)showShareFriends;
 @end
 
 @interface AWENormalModeTabBarGeneralButton : UIButton
@@ -161,6 +164,7 @@ typedef NS_ENUM(NSInteger, MediaType) {
 - (void)performCommentAction;
 - (void)performLikeAction;
 - (void)showSharePanel;
+- (void)showDislikeOnVideo;
 - (void)onVideoPlayerViewDoubleClicked:(id)arg1;
 - (UIViewController *)firstAvailableUIViewController;
 - (void)speedButtonTapped:(id)sender;
@@ -233,6 +237,7 @@ typedef NS_ENUM(NSInteger, MediaType) {
 @end
 
 @interface AWENormalModeTabBar : UIView
+@property (nonatomic, assign, readonly) UITabBarController *yy_viewController;
 @end
 
 @interface AWEPlayInteractionListenFeedView : UIView
@@ -644,6 +649,14 @@ typedef NS_ENUM(NSInteger, MediaType) {
 @interface AWELiveFlowAlertView : UIView
 @end
 
+//搜索视频底部评论视图
+@interface AWECommentInputBackgroundView : UIView
+@end
+
+//聊天视频底部快速回复视图
+@interface AWEIMFeedBottomQuickEmojiInputBar : UIView
+@end
+
 @interface DUXBadge : UIView
 @end
 
@@ -660,6 +673,14 @@ typedef NS_ENUM(NSInteger, MediaType) {
 @end
 
 @interface AWEHPTopBarCTAItemView : UIView
+@end
+
+//应用内推送容器
+@interface AWEInnerNotificationWindow : UIWindow
+- (void)setupBlurEffectForNotificationView;
+- (void)applyBlurEffectToView:(UIView *)containerView;
+- (void)setLabelsColorWhiteInView:(UIView *)view;
+- (void)clearBackgroundRecursivelyInView:(UIView *)view;
 @end
 
 @interface AWEFakeProgressSliderView : UIView
@@ -809,4 +830,3 @@ typedef NS_ENUM(NSInteger, MediaType) {
 
 @interface AWELoadingAndVolumeView : UIView
 @end
-
